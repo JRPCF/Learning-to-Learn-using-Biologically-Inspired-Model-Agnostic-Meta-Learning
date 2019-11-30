@@ -7,6 +7,10 @@ from torch.distributions import Normal
 from collections import OrderedDict
 from maml_rl.policies.policy import Policy, weight_init
 
+"""Original MAML implementation had a linear network learn the policy. 
+Botvnick presents a scenario where his network learns with an rnn policy learning. This is that implementation.
+JR Carneiro JC4896"""
+
 class NormalMLPPolicy(Policy):
     """Policy network based on a multi-layer perceptron (MLP), with a 
     `Normal` distribution output, with trainable standard deviation. This 
@@ -26,7 +30,7 @@ class NormalMLPPolicy(Policy):
         layer_sizes = (input_size,) + hidden_sizes
         for i in range(1, self.num_layers):
             self.add_module('layer{0}'.format(i),
-                nn.Linear(layer_sizes[i - 1], layer_sizes[i]))
+                nn.RNN(input_size=layer_sizes[i - 1], hidden_size=layer_sizes[i]))
         self.mu = nn.Linear(layer_sizes[-1], output_size)
 
         self.sigma = nn.Parameter(torch.Tensor(output_size))
@@ -36,12 +40,20 @@ class NormalMLPPolicy(Policy):
     def forward(self, input, params=None):
         if params is None:
             params = OrderedDict(self.named_parameters())
+        params1 = OrderedDict(self.named_parameters())
         output = input
+        hidden = input
+        print(params['layer1.weight_ih_l0'])
+        print("*")
         for i in range(1, self.num_layers):
             output = F.linear(output,
-                weight=params['layer{0}.weight'.format(i)],
-                bias=params['layer{0}.bias'.format(i)])
+                weight=params['layer{0}.weight_ih_l0'.format(i)],            
+                bias=params['layer{0}.bias_ih_l0'.format(i)])
+            hidden = F.linear(output,
+                weight=params1['layer{0}.weight_hh_l0'.format(i)],            
+                bias=params1['layer{0}.bias_hh_l0'.format(i)])
             output = self.nonlinearity(output)
+            
         mu = F.linear(output, weight=params['mu.weight'],
             bias=params['mu.bias'])
         scale = torch.exp(torch.clamp(params['sigma'], min=self.min_log_std))
