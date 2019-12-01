@@ -41,7 +41,7 @@ class MetaLearner(object):
         grads=list(grads)
         for i in range(len(grads)):
             if grads[i] is None:
-                grads[i]=torch.zeros(parameters[i].size())
+                grads[i]=(parameters[i])
         grads=tuple(grads)
         return grads
     
