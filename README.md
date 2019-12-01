@@ -13,4 +13,7 @@ My approach to the problem was to find a MAML implementation built on PyTorch an
 
 The model was already built for two useful MuJoCo environments, half-cheetah (a 2-legged cheetah) and ant (a 4-legged insect), both of which tasked with learning walking. I decided to collect data on 2-legged cheetah because, due to training times, I could only train one of the models. I have written code for the other models as well. I decided to compare the original MAML and the biologically inspired MAML by statistically comparing the mean total reward in every batch. Unfortunately, the task was less straight forward than I expected. Much of the simulation infrastructure was nonexistent for this task and, due to how MAML is structured, I had to make judgement calls as to how to modify the training of the algorithm to account for the structure of RNNs.
 
+![HalfCheetahDir](https://raw.githubusercontent.com/JRPCF/Learning-to-Learn-using-Model-Agnostic-Meta-Learning-with-Non-Episodic-Memory/master/_assets/halfcheetahdir.gif)
+- MuJoCo Half Cheetah trained on MAML and with a random policy (from [pytorch-maml-rl](https://github.com/tristandeleu/pytorch-maml-rl))
+
 I decided that the best way to create similar algorithms would be to substitute every Linear “cell” with an RNN “cell” and to only train the parameters related to the input and output and not train the parameters related to the in “cell” recursion. In order to implement this, I performed gradient descent in all network parameters except for the inner recursion weights and biases.
