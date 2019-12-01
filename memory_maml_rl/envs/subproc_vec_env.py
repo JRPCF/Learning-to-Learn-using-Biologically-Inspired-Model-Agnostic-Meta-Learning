@@ -78,6 +78,7 @@ class SubprocVecEnv(gym.Env):
         self.observation_space = observation_space
         self.action_space = action_space
 
+    
     def step(self, actions):
         self.step_async(actions)
         return self.step_wait()

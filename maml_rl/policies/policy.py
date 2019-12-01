@@ -3,10 +3,22 @@ import torch.nn as nn
 
 from collections import OrderedDict
 
+def process(grads, parameters):
+    parameters=list(parameters)
+    grads=list(grads)
+    for i in range(len(grads)):
+        if grads[i] is None:
+            grads[i]=torch.zeros(parameters[i].size())
+    grads=tuple(grads)
+    return grads
+    
 def weight_init(module):
     if isinstance(module, nn.Linear):
         nn.init.xavier_uniform_(module.weight)
         module.bias.data.zero_()
+    elif isinstance(module, nn.RNN):
+        nn.init.xavier_uniform_(module.weight_ih_l0)
+        module.bias_ih_l0.data.zero_()
 
 class Policy(nn.Module):
     def __init__(self, input_size, output_size):
@@ -19,11 +31,10 @@ class Policy(nn.Module):
         step-size `step_size`, and returns the updated parameters of the neural 
         network.
         """
-        grads = torch.autograd.grad(loss, self.parameters(),
-            create_graph=not first_order, allow_unused=True)
+        grads = torch.autograd.grad(loss, self.parameters(),create_graph=not first_order, allow_unused=True)
+        grads = process(grads,self.parameters())
         updated_params = OrderedDict()
         for (name, param), grad in zip(self.named_parameters(), grads):
-            if grad is not None:
-                updated_params[name] = param - step_size * grad
+            updated_params[name] = param - step_size * grad
 
         return updated_params

@@ -36,6 +36,15 @@ class MetaLearner(object):
         self.tau = tau
         self.to(device)
 
+    def process(self, grads, parameters):
+        parameters=list(parameters)
+        grads=list(grads)
+        for i in range(len(grads)):
+            if grads[i] is None:
+                grads[i]=torch.zeros(parameters[i].size())
+        grads=tuple(grads)
+        return grads
+    
     def inner_loss(self, episodes, params=None):
         """Compute the inner loss for the one-step gradient update. The inner 
         loss is REINFORCE with baseline [2], computed on advantages estimated 
@@ -110,11 +119,13 @@ class MetaLearner(object):
         def _product(vector):
             kl = self.kl_divergence(episodes)
             grads = torch.autograd.grad(kl, self.policy.parameters(),
-                create_graph=True)
+                create_graph=True, allow_unused=True)
+            grads = self.process(grads, self.policy.parameters())
             flat_grad_kl = parameters_to_vector(grads)
 
             grad_kl_v = torch.dot(flat_grad_kl, vector)
-            grad2s = torch.autograd.grad(grad_kl_v, self.policy.parameters())
+            grad2s = torch.autograd.grad(grad_kl_v, self.policy.parameters(), allow_unused=True)
+            grad2s = self.process(grad2s, self.policy.parameters())
             flat_grad2_kl = parameters_to_vector(grad2s)
 
             return flat_grad2_kl + damping * vector
@@ -165,7 +176,8 @@ class MetaLearner(object):
         on Trust Region Policy Optimization (TRPO, [4]).
         """
         old_loss, _, old_pis = self.surrogate_loss(episodes)
-        grads = torch.autograd.grad(old_loss, self.policy.parameters())
+        grads = torch.autograd.grad(old_loss, self.policy.parameters(), allow_unused=True)
+        grads = self.process(grads, self.policy.parameters())
         grads = parameters_to_vector(grads)
 
         # Compute the step direction with Conjugate Gradient
@@ -185,6 +197,7 @@ class MetaLearner(object):
 
         # Line search
         step_size = 1.0
+        
         for _ in range(ls_max_steps):
             vector_to_parameters(old_params - step_size * step,
                                  self.policy.parameters())
@@ -200,3 +213,4 @@ class MetaLearner(object):
         self.policy.to(device, **kwargs)
         self.baseline.to(device, **kwargs)
         self.device = device
+

@@ -32,6 +32,7 @@ class NormalMLPPolicy(Policy):
         self.sigma = nn.Parameter(torch.Tensor(output_size))
         self.sigma.data.fill_(math.log(init_std))
         self.apply(weight_init)
+        print(self.layer1.bias.size())
 
     def forward(self, input, params=None):
         if params is None:

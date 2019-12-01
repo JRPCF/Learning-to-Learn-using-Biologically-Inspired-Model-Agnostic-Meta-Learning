@@ -4,10 +4,14 @@ import numpy as np
 import torch
 import json
 
-from maml_rl.metalearner import MetaLearner
-from maml_rl.policies import CategoricalMLPPolicy, NormalMLPPolicy
-from maml_rl.baseline import LinearFeatureBaseline
-from maml_rl.sampler import BatchSampler
+import csv
+
+import collections
+
+from memory_maml_rl.metalearner import MetaLearner
+from memory_maml_rl.policies import CategoricalMLPPolicy, NormalMLPPolicy
+from memory_maml_rl.baseline import LinearFeatureBaseline
+from memory_maml_rl.sampler import BatchSampler
 
 from tensorboardX import SummaryWriter
 
@@ -21,8 +25,8 @@ def main(args):
         'AntPos-v0', 'HalfCheetahVel-v1', 'HalfCheetahDir-v1',
         '2DNavigation-v0'])
 
-    writer = SummaryWriter('./logs/regular/{0}'.format(args.output_folder))
-    save_folder = './saves/regular/{0}'.format(args.output_folder)
+    writer = SummaryWriter('./logs/memory_based/{0}'.format(args.output_folder))
+    save_folder = './saves/memory_based/{0}'.format(args.output_folder)
     if not os.path.exists(save_folder):
         os.makedirs(save_folder)
     with open(os.path.join(save_folder, 'config.json'), 'w') as f:
@@ -54,7 +58,8 @@ def main(args):
         metalearner.step(episodes, max_kl=args.max_kl, cg_iters=args.cg_iters,
             cg_damping=args.cg_damping, ls_max_steps=args.ls_max_steps,
             ls_backtrack_ratio=args.ls_backtrack_ratio)
-
+        
+        print(total_rewards([ep.rewards for _, ep in episodes]), batch)
         # Tensorboard
         writer.add_scalar('total_rewards/before_update',
             total_rewards([ep.rewards for ep, _ in episodes]), batch)
@@ -65,6 +70,9 @@ def main(args):
         with open(os.path.join(save_folder,
                 'policy-{0}.pt'.format(batch)), 'wb') as f:
             torch.save(policy.state_dict(), f)
+
+
+    
 
 if __name__ == '__main__':
     import argparse
@@ -123,10 +131,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Create logs and saves folder if they don't exist
-    if not os.path.exists('./logs/regular'):
-        os.makedirs('./logs/regular')
-    if not os.path.exists('./saves/regular'):
-        os.makedirs('./saves/regular')
+    if not os.path.exists('./logs/memory_based'):
+        os.makedirs('./logs/memory_based')
+    if not os.path.exists('./data/memory_based'):
+        os.makedirs('./data/memory_based')
+    if not os.path.exists('./saves/memory_based'):
+        os.makedirs('./saves/memory_based')
     # Device
     args.device = torch.device(args.device
         if torch.cuda.is_available() else 'cpu')

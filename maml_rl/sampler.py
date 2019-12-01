@@ -37,8 +37,9 @@ class BatchSampler(object):
             new_observations, rewards, dones, new_batch_ids, _ = self.envs.step(actions)
             episodes.append(observations, actions, rewards, batch_ids)
             observations, batch_ids = new_observations, new_batch_ids
+            #self.envs.workers[0].env.render("rgb_array")
         return episodes
-
+    
     def reset_task(self, task):
         tasks = [task for _ in range(self.num_workers)]
         reset = self.envs.reset_task(tasks)
