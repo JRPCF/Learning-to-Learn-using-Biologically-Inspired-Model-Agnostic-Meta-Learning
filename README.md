@@ -23,3 +23,5 @@ I decided that the best way to create similar algorithms would be to substitute 
 ![RegularMAMLTrial1](https://raw.githubusercontent.com/JRPCF/Learning-to-Learn-using-Model-Agnostic-Meta-Learning-with-Non-Episodic-Memory/master/_assets/RegularMAMLTrial1.png)
 
 It seems that there is little statistical improvement, at least for RL on the Half-Cheetah model, between the RNN-Policy MAML and the regular NN-Policy MAML.
+
+To check raw data and how to use both the regular MAML and the biologically inspired MAML check Testing_Notebook.ipynb
