@@ -17,3 +17,7 @@ The model was already built for two useful MuJoCo environments, half-cheetah (a 
 - MuJoCo Half Cheetah trained on MAML and with a random policy (from [pytorch-maml-rl](https://github.com/tristandeleu/pytorch-maml-rl))
 
 I decided that the best way to create similar algorithms would be to substitute every Linear “cell” with an RNN “cell” and to only train the parameters related to the input and output and not train the parameters related to the in “cell” recursion. In order to implement this, I performed gradient descent in all network parameters except for the inner recursion weights and biases.
+
+![BiologicalMAMLTrial1](https://raw.githubusercontent.com/JRPCF/Learning-to-Learn-using-Model-Agnostic-Meta-Learning-with-Non-Episodic-Memory/master/_assets/BiologicalMAMLTrial1.png)
+
+![RegularMAMLTrial1](https://raw.githubusercontent.com/JRPCF/Learning-to-Learn-using-Model-Agnostic-Meta-Learning-with-Non-Episodic-Memory/master/_assets/RegularMAMLTrial1.png)
