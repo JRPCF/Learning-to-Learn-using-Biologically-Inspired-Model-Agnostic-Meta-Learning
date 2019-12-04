@@ -21,8 +21,8 @@ def main(args):
         'AntPos-v0', 'HalfCheetahVel-v1', 'HalfCheetahDir-v1',
         '2DNavigation-v0'])
 
-    writer = SummaryWriter('./logs/memory_based/{0}'.format(args.output_folder))
-    save_folder = './saves/memory_based/{0}'.format(args.output_folder)
+    writer = SummaryWriter('./logs/regular/{0}'.format(args.output_folder))
+    save_folder = './saves/regular/{0}'.format(args.output_folder)
     if not os.path.exists(save_folder):
         os.makedirs(save_folder)
     with open(os.path.join(save_folder, 'config.json'), 'w') as f:
@@ -124,12 +124,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Create logs and saves folder if they don't exist
-    if not os.path.exists('./logs/memory_based'):
-        os.makedirs('./logs/memory_based')
-    if not os.path.exists('./data/memory_based'):
-        os.makedirs('./data/memory_based')
-    if not os.path.exists('./saves/memory_based'):
-        os.makedirs('./saves/memory_based')
+    if not os.path.exists('./logs/regular'):
+        os.makedirs('./logs/regular')
+    if not os.path.exists('./data/regular'):
+        os.makedirs('./data/regular')
+    if not os.path.exists('./saves/regular'):
+        os.makedirs('./saves/regular')
     # Device
     args.device = torch.device(args.device
         if torch.cuda.is_available() else 'cpu')
