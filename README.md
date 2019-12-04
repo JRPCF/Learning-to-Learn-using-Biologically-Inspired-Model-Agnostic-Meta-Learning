@@ -33,3 +33,8 @@ I noticed in trials with smaller NNs and smaller batches the Biologically inspir
 I succeeded in creating this new MAML but failed at making a general improvement in learning in small tasks. If I had more computational resources I would implement an LSTM test and a memory-based NN. I think this supports the assertion that the algorithms currently being used for Meta-RL do resemble (at least in behaviour) our current understanding of learning in the prefrontal cortex and that neuroscience inspired algorithms can in fact be helpful when applied to practical tasks such as robot locomotion.
 
 To check raw data and how to use both the regular MAML and the biologically inspired MAML check Testing_Notebook.ipynb
+
+Notes on organization:
+- The RNN based MAML is in the regular MAML folder whereas the standard MAML is in the memory_based_maml folder but there are way too many dependencies for me to change it and I plan on implementing an LSTM based system in the memory_based_maml folder.
+- The program saves logs, policies, and data (for debugging)
+- Simulation is implemented but turned off due to bugs
